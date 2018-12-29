@@ -239,7 +239,7 @@ Class User extends Common{
         }else{
             $offset = 0;
         }
-        $result =  Userdata::getManyList($offset,$limit);
+        $result =  Users::getManyList($offset,$limit);
 //        var_dump($result);
         return $result;
     }
