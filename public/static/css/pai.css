@@ -1,0 +1,59 @@
+/*外边距*/
+.margin-left10{
+    margin-left: 10px !important;
+}
+
+
+/*input宽度*/
+.inputWidth{
+    width: 300px !important;
+}
+
+
+/* 颜色*/
+.ccc{
+    color: #cccccc;
+}
+.fff{
+    color: #FFF;
+    border: 1px solid #1E9FFF;
+}
+
+.c009688{
+    color: #009688 !important;
+}
+.AA094{
+    color: #1AA094 !important;
+}
+.c666{
+    color: red !important;
+}
+.FF5722{
+    color: #FF5722 !important;
+}
+.E9FFF{
+    color: #1E9FFF;
+    border: 1px solid #1E9FFF;
+}
+.E9FFFF{
+    color: #1E9FFF !important;
+}
+.overstriking{
+    font-weight: 700;
+}
+
+/*下划线*/
+.xhx{
+    text-decoration:underline;
+    cursor: pointer;
+}
+
+
+.gensui{
+    position:relative;
+    top: -40px;
+    left: 320px;
+}
+.genmsui{
+    height: 38px;
+}

@@ -1,0 +1,211 @@
+{include file='layout/header'}
+<blockquote class="layui-elem-quote layui-text">
+    <a class="xhx AA094" href="{:url('driver/index')}">驾校管理</a>&nbsp>&nbsp添加驾校
+</blockquote>
+<style>
+    .layui-form-item label{
+        width: 105px !important;
+    }
+
+    #allmap{
+        box-shadow: 10px 10px 10px  #888888;
+        width:60%;height:500px;
+        position: absolute;
+        left:35%;
+        right: 5%;
+        margin-right: 10%;
+        top: 10%;
+        border-radius: 1%;
+    }
+    .anchorBL{
+        display:none;
+    }
+</style>
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=FkY6tDV2G7d7T4c32YmMbyDClfpQzkUb"></script>
+<form class="layui-form" action="{:url('driver/addAction')}" method="post">
+    <div class="layui-form-item">
+        <label class="layui-form-label">驾校名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[drive_name]" lay-verify="title" autocomplete="off" placeholder="请输入服务器名称" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">驾校地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[site]" id="seat" autocomplete="off" placeholder="请输入驾校地址" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">联系方式</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[phone]"  autocomplete="off" placeholder="请输入联系方式" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">经度</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[lng]" autocomplete="off" id="lng" placeholder="请输入经度" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">纬度</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[lat]" autocomplete="off" id="lat" placeholder="请输入纬度" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">默认价格</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[price]" autocomplete="off" placeholder="请输入默认价格" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    {volist name="rolelist" id="vo"}
+        <div class="layui-form-item">
+            <label class="layui-form-label">{$vo.name}价格</label>
+            <div class="layui-input-block">
+                <input type="text" name="price[{$vo.id}]" autocomplete="off" placeholder="请输入{$vo.name}看到的价格" class="layui-input inputWidth">
+            </div>
+        </div>
+    {/volist}
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">驾校链接</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[link]" autocomplete="off" placeholder="请输入驾校链接" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label">类型：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="data[type]" value="1" title="驾校" class="product_radio" checked="">
+            <input type="radio" name="data[type]" value="0" title="体验站" class="product_radio" >
+        </div>
+    </div>
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label">是否展示：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="data[is_show]" value="1" title="展示" class="product_radio" checked="">
+            <input type="radio" name="data[is_show]" value="0" title="不展示" class="product_radio" >
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="demo1">立即添加</button>
+            <a class="layui-btn layui-btn-primary cancel"  lay-filter="cancel"  >取消</a>
+        </div>
+    </div>
+
+    <div class="layui-row">
+        <div class="layui-col-md6" id="allmap"></div>
+    </div>
+
+</form>
+
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+        //自定义验证规则
+        form.verify({
+            title: function(value){
+                if(value.length < 1){
+                    return '提示处不能为空！';
+                }
+            }
+            ,content: function(value){
+                layedit.sync(editIndex);
+            }
+        });
+        //监听指定开关
+        form.on('switch(switchTest)', function(data){
+            console.log(this.checked);
+            layer.msg('IPIP隧道回注：'+ (this.checked ? '开启' : '关闭'), {
+                offset: '6px'
+            });
+        });
+        //监听switchHost指定开关
+        form.on('switch(switchHost)', function(data){
+            console.log(this.checked);
+            layer.msg('Host统计：'+ (this.checked ? '开启' : '关闭'), {
+                offset: '6px'
+            });
+            if(this.checked){
+                $('.switchHost').show();
+            }else{
+                $('.switchHost').hide();
+            }
+
+        });
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            layui.use('jquery',function(){
+                var $=layui.$;
+                $.ajax({
+                    type: 'post',
+                    url: "{:url('driver/addAction')}", // ajax请求路径
+                    data: data.field,
+                    success: function(data){
+                        if(data.code==0){
+                             layer.msg('成功添加驾校！');
+                             setTimeout(function () {
+                                 window.history.back(-1);
+                             },1000)
+                         }else{
+                             layer.msg(data.msg);
+                         }
+                    }
+                });
+            });
+            return false;
+        });
+    });
+
+    $(function () {
+        $('#tpisshow').hide();
+        $('.switchHost').hide();
+        $(".product_radio").click(function () {
+            var product =  $("input[name='product_type']:checked").val();
+            if(product == 0){
+                $('#tpisshow').show();
+            }else if(product == 1){
+                $('#tpisshow').hide();
+            }
+        })
+
+        $(function () {
+            $(".cancel").click(function () {
+                window.location.href="{:url('driver/index')}"
+            })
+        })
+    })
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");
+    map.centerAndZoom(new BMap.Point(108.378754, 22.813567), 11);
+    function showInfo(e){
+        $('#lng').val(e.point.lng)
+        $('#lat').val(e.point.lat)
+        var point = new BMap.Point(e.point.lne,e.point.lat);
+        var geoc = new BMap.Geocoder();
+        var pt = e.point;
+        geoc.getLocation(pt, function(rs){
+            var addComp = rs.addressComponents;
+            console.log(addComp);
+            $('#seat').val(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber)
+        });
+    }
+    map.addEventListener("click", showInfo);
+    map.enableScrollWheelZoom(true);
+
+</script>

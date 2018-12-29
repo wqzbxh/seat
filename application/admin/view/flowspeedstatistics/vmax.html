@@ -1,0 +1,187 @@
+{include file='layout/header'}
+<blockquote class="layui-elem-quote layui-text">
+    <a class="xhx AA094" href="{:url('server/index')}">服务器管理</a>&nbsp>&nbsp<a class="xhx AA094" href="{:url('serverstatistics/flow')}?serverid={$serverid}">流量展示</a>&nbsp>&nbsp小时流量展示
+    <!--<span class="back xhx"></span>-->
+</blockquote>
+<script src="__static__js/echarts.min.js" charset="utf-8"></script>
+
+<div id="main" style="width: 1350px;height:400px;"></div>
+
+
+<script>
+
+
+</script>
+
+
+
+<table class="layui-table" lay-data="{width: 1300, height:1000, url:'{:url('flowspeedstatistics/getFlowspeedstatistics')}?id={$serverid}&&time={$time}', page:false,limits:[15,30,45],limit:15, id:'idTest'}" lay-filter="demo">
+    <thead>
+    <tr>
+
+        <th lay-data="{field:'htime', width:280,templet:'#Time'}">时间</th>
+        <th lay-data="{field:'mbps_all', width:280,templet:'#preciseVmax'}">峰值流速</th>
+    </tr>
+    </thead>
+</table>
+
+
+<script type="text/html" id="preciseVmax">
+    <a  class="xhx c009688" href="{:url('flowspeedstatistics/preciseVmax')}?id={$serverid}&&time={{d.htime}}&&fathertime={$time}">{{d.mbps_all}}</a>
+</script>
+
+<script type="text/html" id="Time">
+    {{ time2date(d.htime) }}
+</script>
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        util = layui.util;
+        //监听表格复选框选择
+        table.on('checkbox(demo)', function(obj){
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(demo)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                window.location.href="{:url('server/index')}?id="+data.id;
+            } else if(obj.event === 'del'){
+                layer.confirm('真的删除服务器吗', function(index){
+                    layui.use('jquery',function(){
+                        var $=layui.$;
+                        $.ajax({
+                            type: 'post',
+                            url: "{:url('server/delAction')}", // ajax请求路径
+                            data: obj.data,
+                            success: function(data){
+                                if(data.code==0){
+                                    layer.msg('删除成功！');
+                                    obj.del();
+                                    layer.close(index);
+                                }else{
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    });
+                });
+            } else if(obj.event === 'edit'){
+                window.location.href="{:url('server/edit')}?id="+data.id;
+            }
+        });
+
+        var $ = layui.$, active = {
+            getCheckData: function(){ //获取选中数据
+                var checkStatus = table.checkStatus('idTest')
+                    ,data = checkStatus.data;
+                layer.alert(JSON.stringify(data));
+            }
+            ,getCheckLength: function(){ //获取选中数目
+                var checkStatus = table.checkStatus('idTest')
+                    ,data = checkStatus.data;
+                layer.msg('选中了：'+ data.length + ' 个');
+            }
+            ,isAll: function(){ //验证是否全选
+                var checkStatus = table.checkStatus('idTest');
+                layer.msg(checkStatus.isAll ? '全选': '未全选')
+            }
+        };del
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+    function time2date(t){
+        var t1 = parseInt(t + '000');
+
+        return util.toDateString(t1,"HH:mm");
+    }
+
+
+    window.onload=function (){
+        $(function () {
+            $.ajax({
+                type: "GET",
+                url: "{:url('flowspeedstatistics/getFlowspeedstatistics')}",
+                data: {id:{$serverid},time:{$time}},
+                dataType: "json",
+                success: function(result){
+                    console.log(result)
+                    if(result.code === 0){
+                        var xdata = [],sdata = [];
+                        // 基于准备好的dom，初始化echarts实例
+                        for (var i =0 ; i < result.data.length;i++){
+
+                            xdata.push(result.data[i]['mbps_all'])
+                            sdata.push(time2date(result.data[i]['htime']))
+                        }
+                        console.log(xdata);
+                        console.log(sdata);
+                        var myChart = echarts.init(document.getElementById('main'));
+
+                        // 指定图表的配置项和数据
+                        var option = {
+                            backgroundColor: '#FBFBFB',
+                            tooltip : {
+                                trigger: 'axis'
+                            },
+                            legend: {
+                                data:['峰值流速','推送数']
+                            },
+                            toolbox: {
+                                show : true,
+                                feature : {
+                                    mark : {show: true},
+                                    dataView : {show: true, readOnly: false},
+                                    magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                                    restore : {show: true},
+                                    saveAsImage : {show: true}
+                                }
+                            },
+                            calculable : true,
+                            xAxis : [
+                                {
+                                    show:true,
+                                    name:'时间',
+                                    type : 'category',
+                                    boundaryGap : false,
+                                    data : sdata
+                                }
+                            ],
+                            yAxis : [
+                                {
+                                    type : 'value',
+                                    show:true,
+                                    name:'数值',
+                                    boundaryGap : false,
+                                }
+                            ],
+                            series : [
+                                {
+                                    name:'',
+                                    type:'line',
+                                    symbol:'none',
+                                    data:xdata
+                                }
+                            ]
+                        };
+
+
+                        // 使用刚指定的配置项和数据显示图表。
+                        myChart.setOption(option);
+                    }
+                }
+            });
+
+
+
+
+        })
+    }
+    
+
+</script>

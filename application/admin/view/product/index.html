@@ -1,0 +1,111 @@
+{include file='layout/header'}
+<blockquote class="layui-elem-quote layui-text">
+    产品管理&nbsp&nbsp&nbsp&nbsp&nbsp <span class="back xhx"></span>
+</blockquote>
+
+
+<table class="layui-table" lay-data="{width: 685, height:667, url:'{:url('product/getProduct')}', page:true,limits:[15,30,45],limit:15, id:'idTest'}" lay-filter="demo">
+
+    <div class="demoTable">
+        <!--搜索产品名称：-->
+        <div class="layui-inline">
+            <input class="layui-input" name="id"  placeholder="请输入搜索产品名称" id="demoReload" autocomplete="off">
+        </div>
+        <button class="layui-btn" data-type="reload">搜索</button>
+        <a href="{:url('product/add')}"><button class="layui-btn margin-left10" style="margin-left: 10px;" >添加产品</button></a>
+    </div>
+    <thead>
+    <tr>
+        <th lay-data="{field:'id', width:180, sort: true, fixed: true}">ID</th>
+        <th lay-data="{field:'product_name', width:180}">产品名称</th>
+        <th lay-data="{field:'product_type', width:80,templet: '#titleTpl'}">类型</th>
+        <th lay-data="{fixed: 'right', width:240, align:'center', toolbar: '#barDemo'}"></th>
+    </tr>
+    </thead>
+</table>
+
+
+<script type="text/html" id="titleTpl">
+    {{#  if(d.product_type ==0){ }}
+         通匹
+    {{#  } else if(d.product_type ==1){ }}
+         基本
+    {{#  } }}
+</script>
+
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-primary layui-btn-xs layui-btn-normal fff" lay-event="detail">规则</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        //监听表格复选框选择
+        table.on('checkbox(demo)', function(obj){
+            console.log(obj)
+        });
+        //监听工具条
+        table.on('tool(demo)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                window.location.href="{:url('Rule/index')}?id="+data.id;
+            } else if(obj.event === 'del'){
+                layer.confirm('数据无法恢复，确定执行删除操作？', function(index){
+                    layui.use('jquery',function(){
+                        var $=layui.$;
+                        $.ajax({
+                            type: 'post',
+                            url: "{:url('product/delAction')}", // ajax请求路径
+                            data: obj.data,
+                            success: function(data){
+                                if(data.code==0){
+                                    layer.msg('删除成功！');
+                                    obj.del();
+                                    layer.close(index);
+                                }else{
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    });
+                });
+            } else if(obj.event === 'edit'){
+                window.location.href="{:url('product/edit')}?id="+data.id;
+            }
+        });
+
+
+        var $ = layui.$, active = {
+            reload: function(){ //获取输入框数据
+                var demoReload = $('#demoReload').val();
+                table.reload('idTest', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                        product_name: demoReload
+                    }
+                });
+            }
+            ,getCheckLength: function(){ //获取选中数目
+                var checkStatus = table.checkStatus('idTest')
+                    ,data = checkStatus.data;
+                layer.msg('选中了：'+ data.length + ' 个');
+            }
+            ,isAll: function(){ //验证是否全选
+                var checkStatus = table.checkStatus('idTest');
+                layer.msg(checkStatus.isAll ? '全选': '未全选')
+            }
+        };
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

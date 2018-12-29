@@ -1,0 +1,364 @@
+{include file='layout/header'}
+<blockquote class="layui-elem-quote layui-text">
+    <a class="xhx AA094" href="{:url('product/index')}">产品管理</a>&nbsp>&nbsp<a class="xhx AA094" href="{:url('childrule/index')}?id={$ruleid}">子规则列表</a>&nbsp>&nbsp修改子规则
+</blockquote>
+<form class="layui-form" action="{:url('product/addAction')}" method="post">
+    <input type="hidden" value="{$childrule['id']}" name="data[id]">
+    <input type="hidden" value="{$childrule['productid']}" name="data[productid]">
+    <input type="hidden" value="{$childrule['ruleid']}" name="data[ruleid]">
+
+    <input type="hidden" name="data[ruleid]" value="{$childrule['ruleid']}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">规则名称</label>
+        <div class="layui-input-block">
+            <input type="text" value="{$childrule['childrule_name']}" name="data[childrule_name]" lay-verify="title" autocomplete="off" placeholder="请输入子规则名称" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block product_radio"  id="childrule_status">
+            <input type="radio" name="data[childrule_status]" value="1" title="开启" class="product_radio">
+            <input type="radio" name="data[childrule_status]" value="0" title="关闭" class="product_radio">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">规则类型</label>
+        <div class="layui-input-block product_radio" id="childrule_type">
+            <input type="radio" name="data[childrule_type]" value="1" title="html" class="product_radio">
+            <input type="radio" name="data[childrule_type]" value="2" title="js" class="product_radio">
+            <input type="radio" name="data[childrule_type]" value="301" title="301" class="product_radio">
+            <input type="radio" name="data[childrule_type]" value="302" title="302" class="product_radio">
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item" id="tpisshow">
+        <div class="layui-inline">
+            <label class="layui-form-label">权重比例</label>
+            <div class="layui-input-inline">
+                <select name="data[childrule_ratio]" lay-verify="required" lay-search="" class="selectWidth" id="selected">
+                    <option value="10" >10</option>
+                    <option value="9">9</option>
+                    <option value="8">8</option>
+                    <option value="7">7</option>
+                    <option value="6">6</option>
+                    <option value="5">5</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2">2</option>
+                    <option value="1">1</option>
+                    <option value="0">0</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item" id="tactics">
+        <div class="layui-inline">
+            <label class="layui-form-label">推送策略</label>
+            <div class="layui-input-inline">
+                <select name="data[userpushtimepolicy]"  class="selectWidth" id="userpushtimepolicy">
+                    <option value="0">————请选择————</option>
+                    {volist name="tactics" id="vo"}
+                    <option value="{$vo.seq}">{$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">IOS策略</label>
+        <div class="layui-input-block" id="iospolicy">
+            <input type="radio" name="data[iospolicy]" value="1" title="开启" class="product_radio">
+            <input type="radio" name="data[iospolicy]" value="0" title="关闭" class="product_radio"  checked="">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">推送过滤</label>
+        <div class="layui-input-block product_radio"  id="pushexcloud">
+            <input type="radio" name="data[pushexcloud]" value="1" title="开启" class="product_radio">
+            <input type="radio" name="data[pushexcloud]" value="0" title="关闭" class="product_radio">
+        </div>
+    </div>
+
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">推送过滤</label>-->
+        <!--<div class="layui-input-block product_radio"  id="pushexcloud">-->
+            <!--<input type="radio" name="data[pushexcloud]" value="1" title="开启" class="product_radio">-->
+            <!--<input type="radio" name="data[pushexcloud]" value="0" title="关闭" class="product_radio">-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">回包方式</label>
+        <div class="layui-input-block tacq_radio" id="childrule_process_mode">
+            <input type="radio" name="data[childrule_process_mode]" value="0" title="只回包" class="product_radio" checked="">
+            <input type="radio" name="data[childrule_process_mode]" value="1" title="回包并采集" class="product_radio" >
+            <input type="radio" name="data[childrule_process_mode]" value="2" title="只采集" class="product_radio" >
+        </div>
+    </div>
+
+    <div class="layui-form-item tacq">
+        <label class="layui-form-label">采集时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_collect_time]"  lay-verify="childrule_collect_time"  value="{$childrule['childrule_collect_time']}"  autocomplete="off" placeholder="请输入采集时间" class="layui-input inputWidth">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">UA排除</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_exua]"   value="{$childrule['childrule_exua']}" autocomplete="off" placeholder="ua 排除" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">UA精准排除</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_precise_exua]" value="{$childrule['childrule_precise_exua']}"  autocomplete="off" placeholder="ua 精准排除" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">UA包含</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_inua]" value="{$childrule['childrule_inua']}"  autocomplete="off" placeholder="请输入ua 包含" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">COOKIE排除</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_excookie]"  value="{$childrule['childrule_excookie']}"  autocomplete="off" placeholder="请输入cookie 排除" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Referer包含</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_inreferer]"  value="{$childrule['childrule_inreferer']}"  autocomplete="off" placeholder="请输入referer 包含" class="layui-input inputWidth">
+        </div>
+        <div class="layui-input-block gensui" id="referermatch" >
+            <input type="radio" name="data[referermatch]" value="1" title="与" >
+            <input type="radio" name="data[referermatch]" value="2" title="或" checked="checked" >
+            <input type="radio" name="data[referermatch]" value="3" title="顺序和" >
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">Referer排除</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_exreferer]" value="{$childrule['childrule_exreferer']}"  autocomplete="off" placeholder="请输入referer 排除" class="layui-input inputWidth">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">匹配方式</label>
+        <div class="layui-input-block childrule_radio" id="childrule_match">
+            <input type="radio" name="data[childrule_match]" value="1" title="精准" class="product_radio">
+            <input type="radio" name="data[childrule_match]" value="2" title="模糊" class="product_radio">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item tpisshow">
+        <label class="layui-form-label">组合关系</label>
+        <div class="layui-input-block" id="childrule_match_type">
+            <input type="radio" name="data[childrule_match_type]" value="1" title="模糊和"  >
+            <input type="radio" name="data[childrule_match_type]" value="2" title="模糊或" checked >
+            <input type="radio" name="data[childrule_match_type]" value="3" title="模糊顺序和" >
+        </div>
+    </div>
+
+
+    <div class="layui-form-item urlisshow">
+        <label class="layui-form-label">URl 为</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_uri]" value="{$childrule['childrule_uri']}"  autocomplete="off" placeholder="请输入URl" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item tpisshow">
+        <label class="layui-form-label">URl 开始</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_uri_start]" value="{$childrule['childrule_uri_start']}" autocomplete="off" placeholder="请输入URl 包含" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item tpisshow">
+        <label class="layui-form-label">URl 包含</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_inuri]" value="{$childrule['childrule_inuri']}"  autocomplete="off" placeholder="请输入URl 包含" class="layui-input inputWidth">
+        </div>
+    </div>
+
+    <div class="layui-form-item genmsui">
+        <label class="layui-form-label">URl 排除</label>
+        <div class="layui-input-block">
+            <input type="text" name="data[childrule_exuri]" value="{$childrule['childrule_exuri']}"  autocomplete="off" placeholder="请输入URl 排除" class="layui-input inputWidth">
+        </div>
+        <div class="layui-input-block gensui" id="autoexclude" >
+            <input type="radio" name="data[autoexclude]" value="0" title="关闭自动排除" checked class="autoexclude">
+            <input type="radio" name="data[autoexclude]" value="1" title="打开自动排除"  class="autoexclude">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">推送报文</label>
+        <div class="layui-input-block"  style="margin-left: 115px;">
+            <textarea placeholder="请输入推送报文" class="layui-textarea" name="data[childrule_push_content]">{$childrule['childrule_push_content']}</textarea>
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="demo1">立即修改</button>
+            <a class="layui-btn layui-btn-primary cancel"  >取消</a>
+        </div>
+    </div>
+</form>
+
+<script>
+    layui.use('laydate', function() {
+        var laydate = layui.laydate;
+        //日期时间选择器
+        laydate.render({
+            elem: '#test5'
+            ,type: 'datetime'
+        });
+    })
+
+        layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+        //自定义验证规则
+        form.verify({
+            title: function(value){
+                if(value.length < 1){
+                    return '提示处不能为空';
+                }
+            }
+            ,childrule_collect_time:function (value) {
+                var childrule_process_mode =  $("input[name='data[childrule_process_mode]']:checked").val();
+                if(childrule_process_mode == 1 || childrule_process_mode ==2){
+                    if(value < 1){
+                        return '该回包方式下采集时间必须大于0！';
+                    }
+                }
+            }
+            ,content: function(value){
+                layedit.sync(editIndex);
+            }
+        });
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            /** 提交前清空无关的参数 **/
+            var childruleSate =  $("input[name='data[childrule_match_type]']:checked").val();
+            var tacq_radio =  $("input[name='data[childrule_process_mode]']:checked").val();
+
+            if(tacq_radio == 0){
+                $('.tacq').find("input").val("");
+            }
+
+            if(childruleSate == 0){
+                $('.tpisshow').find("input").val("");
+
+            }else{
+                $('.urlisshow').find("input").val("");
+            }
+            layui.use('jquery',function(){
+                var $=layui.$;
+                $.ajax({
+                    type: 'post',
+                    url: "{:url('childrule/editAction')}", // ajax请求路径
+                    data: data.field,
+                    success: function(data){
+                        if(data.code==0){
+                             layer.msg('成功');
+                             setTimeout(function () {
+                                 window.history.back(-1);
+                             },1000)
+                         }else{
+                             layer.msg(data.msg);
+                         }
+                    }
+                });
+            });
+            return false;
+        });
+        /**反显默认的select  radio **/
+        $("#selected").find("option[value='{$childrule["childrule_ratio"]}']").prop("selected",true);
+        $("#userpushtimepolicy").find("option[value='{$childrule["userpushtimepolicy"]}']").prop("selected",true);
+        $("#childrule_status").find("input[value='{$childrule["childrule_status"]}']").prop("checked",true);
+        $("#pushexcloud").find("input[value='{$childrule["pushexcloud"]}']").prop("checked",true);
+        $("#childrule_match_type").find("input[value='{$childrule["childrule_match_type"]}']").prop("checked",true);
+        $("#childrule_match").find("input[value='{$childrule["childrule_match"]}']").prop("checked",true);
+        $("#childrule_process_mode").find("input[value='{$childrule["childrule_process_mode"]}']").prop("checked",true);
+        $("#childrule_type").find("input[value='{$childrule["childrule_type"]}']").prop("checked",true);
+        $("#autoexclude").find("input[value='{$childrule["autoexclude"]}']").prop("checked",true);
+        $("#referermatch").find("input[value='{$childrule["referermatch"]}']").prop("checked",true);
+        $("#iospolicy").find("input[value='{$childrule["iospolicy"]}']").prop("checked",true);
+
+        form.render();
+    });
+
+    $(function () {
+        /** 初始化 匹配方式 是否显示部分**/
+        if({$childrule['childrule_match']} == 1){
+            $('.urlisshow').show();
+            $('.tpisshow').hide();
+        }else{
+            $('.urlisshow').hide();
+            $('.tpisshow').show();
+        }
+
+
+        if({$childrule['childrule_process_mode']} == 0){
+            $('.tacq').hide();
+        }else{
+            $('.tacq').show();
+        }
+
+        /** 根据匹配方式显示显示与之相关的填框 **/
+        $(".childrule_radio").click(function () {
+            var childrule =  $("input[name='data[childrule_match]']:checked").val();
+            if(childrule == 1){
+                $('.urlisshow').show();
+                $('.tpisshow').hide();
+
+            }else{
+                $('.urlisshow').hide();
+                $('.tpisshow').show();
+            }
+        })
+
+
+        $(".tacq_radio").click(function () {
+            var tacq_radio =  $("input[name='data[childrule_process_mode]']:checked").val();
+            if(tacq_radio == 0){
+                $('.tacq').hide();
+
+            }else{
+                $('.tacq').show();
+            }
+        })
+        $(".cancel").click(function () {
+            window.location.href="{:url('childrule/index')}?id={$childrule['ruleid']}"
+        })
+    })
+</script>

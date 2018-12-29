@@ -1,0 +1,410 @@
+{include file='layout/header'}
+<blockquote class="layui-elem-quote layui-text">
+    <a class="xhx AA094" href="{:url('index/binding')}">产品绑定</a>&nbsp>&nbsp <a class="xhx AA094" href="{:url('rule/binding')}?serverid={$serverid}&&id={$product_id}">规则绑定</a>&nbsp>&nbsp子规则绑定
+</blockquote>
+
+<div class="layui-form">
+<table class="layui-table layui-form" lay-data="{width: 454, height:667, url:'{:url('childrule/getChildruleBindingList')}?serverid={$serverid}&&rule_id={$rule_id}&&product_id={$product_id}', page:true,limits:[15,30,45],limit:15,serverid:0, id:'idTest'}" lay-filter="demo">
+        <div class="layui-form-item">
+            <input type="hidden" value="{$serverid}" name="serverid" id="serverid">
+            <input type="hidden" value="{$product_id}" name="product_id" id="product_id">
+            <input type="hidden" value="{$rule_id}" name="rule_id" id="rule_id">
+
+            <div class="demoTable layui-inline">
+                <div class="layui-inline">
+                    <input class="layui-input" name="id"  placeholder="请输入搜索子规则名称" id="demoReload" autocomplete="off">
+                </div>
+                <button class="layui-btn" data-type="reload">搜索</button>
+            </div>
+
+
+            <div class="layui-inline" style="">
+                <div class=" product_radio"  id="childrule_status">
+                    <input type="radio" name="data[status]" value="1" lay-filter="status" title="绑定" class="product_radio" >
+                    <input type="radio" name="data[status]" value="0" lay-filter="status" title="解绑" class="product_radio">
+                    <input type="radio" name="data[status]" value="9" title="全部"  lay-filter="status" class="product_radio" checked>
+                </div>
+             </div>
+
+    </div>
+
+
+    <thead>
+    <tr>
+        <th lay-data="{field:'id', width:115, sort: true, fixed: true}">子规则ID</th>
+        <th lay-data="{field:'childrule_name', width:220,templet: '#childrule_name'}">规则名称</th>
+        <th lay-data="{field:'status', width:115,templet: '#status'}">操作项</th>
+    </tr>
+    </thead>
+</table>
+</div>
+
+<script type="text/html" id="status">
+    {{#  if(d.status == 1){ }}
+    <a class="layui-btn  layui-btn-xs " lay-event="statusOn">解绑</a>
+    {{#  } else if(d.status == 0 || d.status == null){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs " lay-event="statusOff">绑定</a>
+    {{#  } }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<script type="text/html" id="childrule_name">
+    <a class="xhx" lay-event="sonLink">{{d.childrule_name}}</a>
+</script>
+
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">规则</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+
+
+    layui.use(["table","form"], function(){
+        var table = layui.table;
+        var form = layui.form;
+        form.on('select(selectChage)', function(data){
+            console.log(data.elem); //得到select原始DOM对象
+            console.log(data.value); //得到被选中的值
+            console.log(data.othis); //得到美化后的DOM对象
+            table.reload('idTest',{
+                limit:15,
+                where:{
+                    serverid:data.value,
+                },
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        });
+        //监听表格复选框选择
+        table.on('checkbox(demo)', function(obj){
+            console.log(obj.id)
+        });
+
+        /**
+         * 过滤监听
+         */
+        form.on('radio(status)', function(data){
+            // alert(data.value)
+            var serverid = $("input[name='serverid']").val();
+            var product_id = $("input[name='product_id']").val();
+            var rule_id = $("input[name='rule_id']").val();
+            table.reload('idTest',{
+                limit:15,
+                where:{
+                    serverid:serverid,
+                    status:data.value,
+                    product_id : product_id,
+                    rule_id:rule_id
+                },
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        })
+
+        //监听工具条
+        table.on('tool(demo)', function(obj){
+            var data = obj.data;
+            var serverid = $("input[name='serverid']").val();
+            var product_id = $("input[name='product_id']").val();
+            var rule_id = $("input[name='rule_id']").val();
+
+
+            if(obj.event === 'detail'){
+                window.location.href="{:url('Rule/index')}?id="+data.id;
+            } else if(obj.event === 'sonLink'){
+                //填写子规则绑定模板渠道号编写
+                // if(data.spid == null){
+                if(false){
+                    layer.alert('绑定后才能进行填写！');
+                }else{
+                    var spid = data.spid
+                    layui.use('jquery',function(){
+                        var $=layui.$;
+                        $.ajax({
+                            type: 'post',
+                            url: "{:url('serverchildrule/getServerchildOne')}", // ajax请求路径
+                            data:{
+                                "id" : data.id,
+                                "serverid" : serverid,
+                                "child_rule_id" : data.id, //ruleid
+                                "product_id" : product_id,
+                                'rule_id' :rule_id,
+                                "spid" : data.spid
+                            },
+                            success: function(data){
+                                console.log(data);
+                                if(data.code==0){
+                                    if(data.code==0){
+                                        //弹出页面填写
+                                        var spid = data.data.chidruleRelations.id;
+                                        if(data.data.chidruleRelations.childrule_exuri == null){
+                                            data.data.chidruleRelations.childrule_exuri = '';
+                                        }
+                                        if(data.data.chidruleRelations.childrule_push_content == null){
+                                            data.data.chidruleRelations.childrule_push_content = '';
+                                        }
+
+                                        if(data.data.chidruleResult.childrule_push_content == null){
+                                            data.data.chidruleResult.childrule_push_content = '';
+                                        }
+
+                                        if(data.data.chidruleRelations.binding_childrule_host == null || data.data.chidruleRelations.binding_childrule_host == undefined ){
+                                            data.data.chidruleRelations.binding_childrule_host = '';
+                                        }
+
+                                        layer.open({
+                                            type: 1 //Page层类型
+                                            ,btn:["确定","取消"]
+                                            ,title:'子规则填写'
+                                            ,skin: 'layui-layer-prompt'
+                                            ,area:['730px','500px;']
+                                            ,content: "<form><div class='layui-form'><div class='opendiv'>渠道号：</div><input type='text' name='childrule_exuri' class='layui-layer-input openinput' value='"+data.data.chidruleRelations.childrule_exuri+"' placeholder='渠道号'>" +
+                                                "<div class='opendiv'>HOST排除：</div><input type='text' name='binding_childrule_host' class='layui-layer-input openinput' value='"+data.data.chidruleRelations.binding_childrule_host+"' placeholder='HOST排除'>   " +
+                                                "<div class='opendiv'>推送策略：&nbsp&nbsp&nbsp(模板："+data.data.chidrulePushpolicy+")</div>" +
+                                                " <div class=\"layui-input-inline\">\n" +
+                                                "                <select name='childuserpushtimepolicy'  class=\"selectWidth\" id=\"childuserpushtimepolicy\">\n" +
+                                                "                    <option value=\"0\">————请选择————</option>\n" +
+                                                "                    {volist name='tactics' id='vo'}" +
+                                                "                    <option value='{$vo.seq}'>{$vo.name}</option>" +
+                                                "                    {/volist}" +
+                                                "                </select>" +
+                                                " </div>"+
+                                                "<div class='opendiv'>权重比例：</div>" +
+                                                "<div class='' id='tpisshow'>\n" +
+                                                "        <div class='layui-inline'>\n" +
+                                                "            <div class=\"layui-input-inline\">\n" +
+                                                "                <select name='binding_childrule_ratio' lay-verify='required' lay-search='' class='selectWidth' id='selected'>\n" +
+                                                "                    <option value='10'>10</option>\n" +
+                                                "                    <option value='9'>9</option>\n" +
+                                                "                    <option value='8'>8</option>\n" +
+                                                "                    <option value='7'>7</option>\n" +
+                                                "                    <option value='6'>6</option>\n" +
+                                                "                    <option value='5'>5</option>\n" +
+                                                "                    <option value='4'>4</option>\n" +
+                                                "                    <option value='3'>3</option>\n" +
+                                                "                    <option value='2'>2</option>\n" +
+                                                "                    <option value='1'>1</option>\n" +
+                                                "                    <option value='0' >0</option>\n" +
+                                                "                </select>\n" +
+                                                "            </div>\n" +
+                                                "        </div>\n" +
+                                                "    </div>" +
+                                                "<div class='opendiv'>推送过滤：</div>" +
+                                                " <div class=\"layui-form-item\"  id=\"pushexcloud\">\n" +
+                                                "            <input type=\"radio\" name=\"childpushexcloud\" value=\"1\" title=\"开启\" class=\"product_radio\">\n" +
+                                                "            <input type=\"radio\" name=\"childpushexcloud\" value=\"0\" title=\"关闭\" class=\"product_radio\" checked=''>\n" +
+                                                " </div>" +
+                                                "<div class='opendiv'>推送报文模板：</div><input type='text' disabled name='binding_childrule_host' style='width: 660px;' class='layui-layer-input openinput' value='"+ data.data.chidruleResult.childrule_push_content+"' placeholder='暂无模板'>" +
+                                                "<div class='opendiv'>推送报文：</div><textarea class='layui-textarea' style='height:230px;margin-top:5px;' placeholder='推送报文'>"+data.data.chidruleRelations.childrule_push_content+"</textarea></div></form>"
+                                            ,yes: function(index, layero){
+                                                //按钮【按钮一】的回调
+                                                var childrule_exuri= $(layero).find("input[name='childrule_exuri']").val();
+                                                var binding_childrule_host= $(layero).find("input[name='binding_childrule_host']").val();
+                                                var childrule_push_content = $(layero).find("textarea").val()
+                                                var binding_childrule_ratio = $("#selected").find("option:selected").val();
+                                                var childuserpushtimepolicy = $("#childuserpushtimepolicy").find("option:selected").val();
+                                                var childpushexcloud =  $('#pushexcloud input[name="childpushexcloud"]:checked ').val()
+                                                form.on('select', function(data){
+                                                    console.log(data); //得到被选中的值]
+                                                });
+                                                console.log();
+                                                //
+                                                layui.use('jquery',function(){
+                                                    var $=layui.$;
+                                                    $.ajax({
+                                                        type: 'post',
+                                                        url: "{:url('serverchildrule/updateServerChildRule')}", // ajax请求路径
+                                                        data:{
+                                                            "childrule_push_content" : childrule_push_content,
+                                                            "binding_childrule_host" : binding_childrule_host,
+                                                            "childpushexcloud":childpushexcloud,
+                                                            "binding_childrule_ratio" :binding_childrule_ratio,
+                                                            "childrule_exuri" : childrule_exuri,
+                                                            "childuserpushtimepolicy" :childuserpushtimepolicy,
+                                                            "spid" : spid
+                                                        },
+                                                        success: function(data){
+                                                            if(data.code==0){
+                                                                if(data.code==0){
+                                                                    layer.alert('修改成功');
+                                                                    layer.close(index);
+                                                                }else{
+                                                                    layer.msg(data.msg);
+                                                                }
+                                                            }else{
+                                                                layer.msg(data.msg);
+                                                            }
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                        });
+                                        console.log(data.data.chidruleResult.userpushtimepolicy);
+
+                                        $("#childuserpushtimepolicy").find("option[value="+ data.data.chidruleRelations.childuserpushtimepolicy+"]").prop("selected",true);
+                                        $("#pushexcloud").find("input[value="+data.data.chidruleRelations.childpushexcloud+"]").prop("checked",true);
+                                        $("#selected").find("option[value="+data.data.chidruleRelations.binding_childrule_ratio+"]").prop("selected",true);
+
+                                        form.render();
+                                    }else{
+                                        layer.msg(data.msg);
+                                    }
+                                }else{
+                                    layer.msg(data.msg);
+                                }
+                            }
+                        });
+                    });
+
+                }
+            } else if(obj.event === 'statusOn'){
+                layui.use('jquery',function(){
+                    var $=layui.$;
+                    $.ajax({
+                        type: 'post',
+                        url: "{:url('serverchildrule/changeStatus')}", // ajax请求路径
+                        data:{
+                            "serverid" : serverid,
+                            "child_rule_id" : data.id, //ruleid
+                            "product_id" : product_id,
+                            "status" : 1,
+                            'rule_id' :rule_id,
+                            "spid" : data.spid
+                        },
+                        success: function(data){
+                            if(data.code==0){
+                                // layer.msg('成功');
+                                if(data.code==0){
+                                    table.reload('idTest',{
+                                        page: {
+                                            curr: 1 //重新从第 1 页开始
+                                        }
+                                    });
+                                    layer.msg(obj.data.id+'：已解绑');
+                                }else{
+                                    layer.msg(data.msg);
+                                }
+                            }else{
+                                layer.msg(data.msg);
+                            }
+                        }
+                    });
+                });
+            }else if(obj.event === 'del'){
+                layer.confirm('数据无法恢复，确定执行删除操作？', function(index){
+                        layui.use('jquery',function(){
+                            var $=layui.$;
+                            $.ajax({
+                                type: 'post',
+                                url: "{:url('serverchildrule/changeStatus')}", // ajax请求路径
+                                data:{
+                                    "serverid" : serverid,
+                                    "child_rule_id" : data.id, //ruleid
+                                    "product_id" : product_id,
+                                    "status" : 2,
+                                    'rule_id' :rule_id,
+                                    "spid" : data.spid
+                                },
+                                success: function(data){
+                                    if(data.code==0){
+                                        // layer.msg('成功');
+                                        if(data.code==0){
+                                            table.reload('idTest',{
+                                                page: {
+                                                    curr: 1 //重新从第 1 页开始
+                                                }
+                                            });
+                                            layer.msg('删除成功！');
+                                        }else{
+                                            layer.msg(data.msg);
+                                        }
+                                    }else{
+                                        layer.msg(data.msg);
+                                    }
+                                }
+                            });
+                        });
+                })
+            } else if(obj.event === 'statusOff'){
+                console.log(obj)
+                console.log(serverid);
+                layui.use('jquery',function(){
+                    var $=layui.$;
+                    $.ajax({
+                        type: 'post',
+                        url: "{:url('serverchildrule/changeStatus')}", // ajax请求路径
+                        data:{
+                            "serverid" : serverid,
+                            "child_rule_id" : data.id, //ruleid
+                            "product_id" : product_id,
+                            "status" : data.status,
+                            'rule_id' :rule_id,
+                            "spid" : data.spid
+                        },
+                        success: function(data){
+                            if(data.code==0){
+                                table.reload('idTest',{
+                                    page: {
+                                        curr: 1 //重新从第 1 页开始
+                                    }
+                                });
+                            }else{
+                                layer.msg(data.msg);
+                            }
+                        }
+                    });
+                });
+            }
+        });
+
+
+        var $ = layui.$, active = {
+            reload: function(){ //获取输入框数据
+                var demoReload = $('#demoReload').val();
+                table.reload('idTest', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: {
+                        childrule_name: demoReload
+                    }
+                });
+            }
+        };
+
+        $('.demoTable .layui-btn').on('click', function(){
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+    });
+
+
+    $(function () {
+        $(".back").click(function () {
+            window.history.back(-1);
+        })
+    })
+
+
+
+
+</script>
+
+<style>
+    .openinput{
+        margin: 0 !important;
+    }
+    .opendiv{
+        margin: 5px 0;
+    }
+
+</style>
