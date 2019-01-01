@@ -7,13 +7,26 @@
     <div class="layui-form-item">
         <label class="layui-form-label typename">账号</label>
         <div class="layui-input-block">
-            <input type="text" name="data[username]" value="{$userInfo['username']}" disabled lay-verify="name"   autocomplete="off" placeholder="请输入账号" class="layui-input inputWidth">
+            <input type="text" name="data[name]" value="{$userInfo['name']}" disabled lay-verify="name"   autocomplete="off" placeholder="请输入账号" class="layui-input inputWidth">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label typename"> 密码</label>
         <div class="layui-input-block">
-            <input type="text" name="data[passwd]" value="{$userInfo['passwd']}"  lay-verify="pass"  autocomplete="off" placeholder="请输入密码" class="layui-input inputWidth">
+            <input type="text" name="data[password]" value="{$userInfo['password']}"  lay-verify="pass"  autocomplete="off" placeholder="请输入密码" class="layui-input inputWidth">
+        </div>
+    </div>
+    <div class="layui-form-item" id="tactics">
+        <div class="layui-inline">
+            <label class="layui-form-label">级别</label>
+            <div class="layui-input-inline">
+                <select name="data[type]"  class="selectWidth">
+                    <option value="0">————请选择————</option>
+                    {volist name="roleList" id="vo"}
+                    <option value="{$vo.id}">{$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
         </div>
     </div>
 

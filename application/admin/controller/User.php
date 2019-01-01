@@ -120,9 +120,8 @@ Class User extends Common{
 
     public function edit()
     {
-
         if(!empty($_GET['id'])){
-            $result = Userdata::getOne(array('id'=>$_GET['id']));
+            $result = Users::getOne(array('id'=>$_GET['id']));
             if($result['code'] == 0){
                 //查询所有的菜单
                 $commonCrontroller = new Common();
@@ -133,7 +132,13 @@ Class User extends Common{
                 $userMenu = Usermenuinfo::getUsermenuinfoList($_GET['id']);
                 $userMenu = \GuzzleHttp\json_encode($userMenu);
                 $this->assign('userMenu',$userMenu);
-                $this->assign('userInfo',$result['data']);
+                $this->assign('userInfo',$result['data']);   $roleList = \app\common\model\Role::getList(50,0,'');
+                if($roleList['code'] == 0){
+                    $this->assign('roleList',$roleList['data']);
+                }else{
+                    $this->assign('roleList',array());
+                }
+
                 return $this->view->fetch('user/edit');
             }else{
                echo " <script>window.history.back();location.reload();</script>";
