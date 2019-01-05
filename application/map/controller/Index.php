@@ -1,5 +1,5 @@
 <?php
-namespace app\index\controller;
+namespace app\map\controller;
 
 use app\common\controller\Common;
 use app\common\model\Error;
@@ -26,28 +26,13 @@ class Index extends Controller
 
     public function index()
     {
-
-        $file = 'rulefile/DecryptFile/out_614.xml';
-        $mark = 'a';
-        if(is_file($file)){
-            $zip = new \ZipArchive();
-            $filename = $mark . ".zip";
-            $zip->open($filename, \ZipArchive::CREATE);   //打开压缩包
-            $zip->addFile($file, basename($file));   //向压缩包中添加文件
-            $zip->close();  //关闭压缩包
-            //输出压缩文件提供下载
-            header("Cache-Control: max-age=0");
-            header("Content-Description: File Transfer");
-            header('Content-disposition: attachment; filename=' . basename($filename)); // 文件名
-            header("Content-Type: application/zip"); // zip格式的
-            header("Content-Transfer-Encoding: binary"); //二进制
-            header('Content-Length: ' . filesize($filename)); //
-            @readfile($filename);//输出文件;
-            unlink($filename); //删除压缩包临时文件
-        } else {
-            $this->error('源文件不存在！');
-        }
-
+        $lat = 22.855567;
+        $lng = 108.4388888;
+        $zoom =  13;
+        $this->assign('lat',$lat);
+        $this->assign('lng',$lng);
+        $this->assign('zoom',$zoom);
+        return $this->fetch('map');
     }
 
 //    请求服务器测试代码

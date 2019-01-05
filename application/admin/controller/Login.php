@@ -10,6 +10,7 @@ namespace app\admin\controller;
 
 use app\common\model\Operationlog;
 use app\common\model\Userpermission;
+use app\common\model\Users;
 use think\captcha\Captcha;
 use think\Controller;
 use think\Request;
@@ -76,6 +77,53 @@ Class Login extends Controller{
 
             return $returnArray;
         }
+
+
+    /**
+     * 登陆处理
+     */
+    public function registAction()
+    {
+        $errorModel = new \app\common\model\Error();
+        $returnArray = array();
+        $captcha = new Captcha();
+
+        if(!empty($_POST['code']) && $captcha->check($_POST['code']))
+        {
+            if(!empty($_POST['name']) && !empty($_POST['password'])){
+                $userDataModel = new \app\common\model\Users();
+                $result = $userDataModel->loginSin($_POST['name'],$_POST['password']);
+                $userResult = Users::getOne(array('name'=>$_POST['name']));
+                unset($_POST['code']);
+                if($userResult['code'] == 0){
+                    $returnArray = array(
+                        'code' => 10007,
+                        'msg' => $errorModel::ERRORCODE[10007],
+                        'data' => array()
+                    );
+                }else{
+                    $returnArray = Users::addUserAction($_POST);
+                }
+            }else{
+                $returnArray = array(
+                    'code' => 10004,
+                    'msg' => $errorModel::ERRORCODE[10004],
+                    'data' => array(),
+                );
+            }
+        }else{
+            $returnArray = array(
+                'code' => 10006,
+                'msg' => $errorModel::ERRORCODE[10006],
+                'data' => array(),
+            );
+        }
+
+
+        return $returnArray;
+    }
+
+
 
         public function exitAction()
         {

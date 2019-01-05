@@ -97,6 +97,7 @@ Class User extends Common{
             );
         }
         $data['type'] = $acceptData['type'];
+        $data['is_check'] = 1;
         $data['create_at'] = time();
         if(empty($returnArray)){
                 $addUserResult = Users::addUserAction($data);
@@ -158,12 +159,10 @@ Class User extends Common{
     {
         $returnArray = [];
         if(!empty($_POST['data']) && is_array($_POST['data']) && !empty($_POST['data']['id'])){
-
             $where = array();
             $where['id'] = $_POST['data']['id'];
-            $editResult = Userdata::update($_POST['data'],$where)->toArray();
+            $editResult = Users::update($_POST['data'],$where)->toArray();
             if($editResult){
-
                 if(!empty($_POST['sonCheck'])){
                     foreach ($_POST['sonCheck'] as $value){
                         $menuIfo[] = [
@@ -204,13 +203,41 @@ Class User extends Common{
     {
         $returnArray = [];
         if(!empty($_POST['id'])){
-            $delResult = Userdata::destroy(['id'=> $_POST['id']]);
+            $delResult = Users::destroy(['id'=> $_POST['id']]);
             Usermenuinfo::del(array('user_id'=>$_POST['id']));
             if($delResult){
                 $returnArray = array(
                     'code' => 0,
                     'msg' => Error::ERRORCODE[0],
                     'data' => $delResult
+                );
+            }else{
+                $returnArray = array(
+                    'code' => 13003,
+                    'msg' => Error::ERRORCODE[13003],
+                    'data' => []
+                );
+            }
+        }else{
+            $returnArray = array(
+                'code' => 10005,
+                'msg' => Error::ERRORCODE[10005],
+                'data' => []
+            );
+        }
+        return $returnArray;
+    }
+
+    public function checkAction()
+    {
+        $returnArray = [];
+        if(!empty($_POST['id'])){
+            $editResult = Users::update(array('is_check' => 1),array('id'=>$_POST['id']))->toArray();
+            if($editResult){
+                $returnArray = array(
+                    'code' => 0,
+                    'msg' => Error::ERRORCODE[0],
+                    'data' => $editResult
                 );
             }else{
                 $returnArray = array(
@@ -245,6 +272,26 @@ Class User extends Common{
             $offset = 0;
         }
         $result =  Users::getManyList($offset,$limit);
+//        var_dump($result);
+        return $result;
+    }
+
+    /**
+     * @return array获取账号列表
+     */
+    public function getListcheck()
+    {
+        if(isset($_GET["limit"])){
+            $limit = $_GET["limit"];
+        }else{
+            $limit = 15;
+        }
+        if(isset($_GET["page"])){
+            $offset = ($_GET["page"] -1) * $limit;
+        }else{
+            $offset = 0;
+        }
+        $result =  Users::getManyListCheck($offset,$limit);
 //        var_dump($result);
         return $result;
     }

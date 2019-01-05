@@ -20,7 +20,7 @@
         <div class="layui-inline">
             <label class="layui-form-label">级别</label>
             <div class="layui-input-inline">
-                <select name="data[type]"  class="selectWidth">
+                <select name="data[type]"  class="selectWidth" id="jibie">
                     <option value="0">————请选择————</option>
                     {volist name="roleList" id="vo"}
                     <option value="{$vo.id}">{$vo.name}</option>
@@ -114,6 +114,9 @@
             }
             form.render('checkbox');
         })
+
+        $("#jibie").find("option[value='{$userInfo["type"]}']").prop("selected",true);
+        form.render();
     });
 
 

@@ -106,17 +106,9 @@ class Index extends  Common{
      * 返回默认数据
      */
 
-    public function httpdatacollectServeridIndex()
+    public function userindexing()
     {
-        $httpDataCollectServerModel = new \app\common\model\HttpdatacollectServerid();
-        $result = $httpDataCollectServerModel->getTables();
-        if($result['code'] == 0){
-            $this->assign('tables',$result['data']);
-            $this->assign('defaultTables',key($result['data']));
-            return $this->fetch('httpdatacollect_serverid/index');
-        }else{
-            return '分库中暂无数据表';
-        }
+        return $this->fetch('user/userindexing');
 
     }
 

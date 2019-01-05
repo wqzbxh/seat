@@ -147,9 +147,43 @@ Class Users extends Model{
         $errorModel = new \app\common\model\Error();
 
         if($limit != 0 && $offset != 0){
-            $result = self::where('id','<>',1)->limit($offset,$limit)->select()->toArray();
+            $result = self::where('id','<>',1)->where(array('is_check'=>1))->limit($offset,$limit)->select()->toArray();
         }else{
-            $result = self::where('id','<>',1)->select()->toArray();
+            $result = self::where('id','<>',1)->where(array('is_check'=>1))->select()->toArray();
+        }
+        $count = self::where('id','<>',1)
+            ->count();
+
+        if(!empty($result)){
+            $returnArray = array(
+                'code' => 0,
+                'msg' => $errorModel::ERRORCODE[0],
+                'count' =>$count,
+                'data' => $result
+            );
+        }else{
+            $returnArray = array(
+                'code' => 10001,
+                'msg' => $errorModel::ERRORCODE[10001],
+                'data' => $result
+            );
+        }
+        return $returnArray;
+    }
+
+    /**
+     ** 获取子账号列表
+     **/
+    public static function getManyListCheck($limit = 0,$offset = 0)
+    {
+        $criteria = array();
+        $returnArray = array();
+        $errorModel = new \app\common\model\Error();
+
+        if($limit != 0 && $offset != 0){
+            $result = self::where('id','<>',1)->where(array('is_check'=>0))->limit($offset,$limit)->select()->toArray();
+        }else{
+            $result = self::where('id','<>',1)->where(array('is_check'=>0))->select()->toArray();
         }
         $count = self::where('id','<>',1)
             ->count();
