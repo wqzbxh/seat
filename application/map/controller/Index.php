@@ -2,6 +2,7 @@
 namespace app\map\controller;
 
 use app\common\controller\Common;
+use app\common\model\Drivers;
 use app\common\model\Error;
 use app\common\model\Menuinfo;
 use app\common\model\Productdata;
@@ -29,6 +30,13 @@ class Index extends Controller
         $lat = 22.855567;
         $lng = 108.4388888;
         $zoom =  13;
+        //查出所有的驾校的id 以及坐标位置
+        $result = Drivers::getAllList();
+        if($result['code'] == 0){
+            $this->assign('seat',$result['data']);
+        }else{
+            $this->assign('seat',[]);
+        }
         $this->assign('lat',$lat);
         $this->assign('lng',$lng);
         $this->assign('zoom',$zoom);
@@ -129,4 +137,6 @@ class Index extends Controller
             fclose($newf);
         }
     }
+
+
 }

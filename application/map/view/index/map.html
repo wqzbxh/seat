@@ -50,6 +50,7 @@
 
 </head>
 <body>
+
 <form name="aspnetForm" method="post" action="./" id="aspnetForm">
     <div>
         <input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMjA4Nzk5Njg4NWRkwNocMeNTUd5Rk2e8HZhULUEmPJt3oLFQxM+mu3drkWk=" />
@@ -219,8 +220,43 @@
 
 </div>
 <script>
-
+    var seatList = [];
+    seatList = <?php ?>;
+    console.log(seatList);
+   alert(111);
     function buttonClick(){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         var geolocation = new BMap.Geolocation();
         geolocation.getCurrentPosition(function(r){
             if(this.getStatus() == BMAP_STATUS_SUCCESS){
@@ -261,114 +297,34 @@
 </style>
 <div id="allmap"></div>
 <script type="text/javascript">
-    var l=0;
-    var t=0;
-    var data_info = [];
-
+    // 百度地图API功能
     map = new BMap.Map("allmap");
-    map.centerAndZoom(new BMap.Point({$lng},{$lat}), {$zoom});
-
-    var geolocation = new BMap.Geolocation();
-    geolocation.getCurrentPosition(function(r){
-        if(this.getStatus() == BMAP_STATUS_SUCCESS){
-
-            l = r.point.lng;
-            t = r.point.lat;
-            lt = r.point;
-            console.log(l);
-            if(l!=''){
-                $.post("{:url('drivers/getInfo')}",{},function(result){
-                    var resultLength = result[0].length;
-                    console.log(result)
-                    localStorage.lastname =  result[1];
-                    console.log(localStorage.lastname) ;
-                    var result = result[0];
-                    console.log(result);
-                    for (var i=0 ;i<resultLength;i++){
-                        if(localStorage.lastname==1){
-                            var arr = [result[i]['lng'],result[i]['lat'],
-                                "<div><p style='font-size:11px;'>"+result[i]['drive_name']+
-                                "<div><p style='font-size:11px;'><span style='color:red'>￥："+result[i]['price']+
-                                "</span><br><br><span style='font-size:11px;'>地址:"+result[i]['site']+"</span><br><br>" +
-                                "<a href='http://api.map.baidu.com/direction?origin=latlng:"+t+","+l+"|name:出发点&destination="+result[i]['site']+"&mode=driving&region=上海市&output=html&src=yourCompanyName|yourAppName'><button  style='background-color: #ffad33; /* Green */border-radius: 2px;color: white;margin-right:10px;padding:2px 10px;text-align:center;text-decoration:none;display:inline-block;font-size: 12px;'>导航</button></a>" +
-                                "<a href='"+result[i]['link']+"'><button  style='background-color: #ffad33; /* Green */border-radius: 2px;color: white;margin-right:10px;padding:2px 20px;text-align:center;text-decoration:none;display:inline-block;font-size: 12px;'>详情</button></a>" +
-                                "<a href='tel:"+result[i]['phone']+"'><button  style='background-color: #ffad33;font-size:12px; /* Green */border-radius: 2px;color: white;margin-right:10px;padding:2px 20px;text-align:center;text-decoration:none;display:inline-block;font-size: 12px;'>电话</button></a>" +
-
-                                ""
-                            ];
-                        }else{
-                            var arr = [result[i]['lng'],result[i]['lat'],
-                                "<div><p style='font-size:11px;'>"+result[i]['drive_name']+
-                                "<br><br><span style='font-size:11px;'>地址:"+result[i]['site']+"</span><br><br>" +
-                                "<a href='http://api.map.baidu.com/direction?origin=latlng:"+t+","+l+"|name:出发点&destination="+result[i]['site']+"&mode=driving&region=上海市&output=html&src=yourCompanyName|yourAppName'><button  style='background-color: #ffad33; /* Green */border-radius: 2px;color: white;margin-right:10px;padding:2px 10px;text-align:center;text-decoration:none;display:inline-block;font-size: 12px;'>导航</button></a>" +
-                                "<a href='"+result[i]['link']+"'><button  style='background-color: #ffad33; /* Green */border-radius: 2px;color: white;margin-right:10px;padding:2px 20px;text-align:center;text-decoration:none;display:inline-block;font-size: 12px;'>详情</button></a>" +
-                                "<a href='tel:"+result[i]['phone']+"'><button  style='background-color: #ffad33;font-size:12px; /* Green */border-radius: 2px;color: white;margin-right:10px;padding:2px 20px;text-align:center;text-decoration:none;display:inline-block;font-size: 12px;'>电话</button></a>" +
-
-                                ""
-                            ];
-                        }
-
-
-                        data_info.push(arr);
-                    }
-
-                    var opts = {
-                        width : 160,     // 信息窗口宽度
-                        height:160,     // 信息窗口高度
-                        title : "南宁驾校统一平台" , // 信息窗口标题
-                        enableMessage:true//设置允许信息窗发送短息
-                    };
-
-                    //mMapView.showZoomControls(true);
-                    for(var i=0;i<data_info.length;i++){
-                        var marker = new BMap.Marker(new BMap.Point(data_info[i][0],data_info[i][1]));  // 创建标注
-                        var content = data_info[i][2];
-
-                        if(result[i].type == 1){
-                            map.addOverlay(marker);
-                        }else{
-                            var pt = new BMap.Point(data_info[i][0],data_info[i][1]);
-                            var myIcon = new BMap.Icon("__STATIC__img/tysite.png", new BMap.Size(60,60));
-                            var marker = new BMap.Marker(pt,{icon:myIcon});  // 创建标注
-                            map.addOverlay(marker);
-                        }
-                        // 将标注添加到地图
-
-
-                        //
-                        ;
-                        // 将标注添加到地图中
-                        addClickHandler(content,marker);
-                    }
-                    function addClickHandler(content,marker){
-                        marker.addEventListener("click",function(e){
-                            openInfo(content,e)}
-                        );
-                    }
-                    function openInfo(content,e){
-                        var p = e.target;
-                        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-                        var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
-                        map.openInfoWindow(infoWindow,point); //开启信息窗口
-                    }
-
-
-                });
-
-            }
-
-
-
-        }
-    },{enableHighAccuracy: true})
-
-
-
-
-
-
-
-    // mMapView.showZoomControls(true);
-    map.enableScrollWheelZoom(true);
+    map.centerAndZoom(new BMap.Point(116.417854,39.921988), 15);
+    var data_info = [[116.417854,39.921988,"地址：北京市东城区王府井大街88号乐天银泰百货八层"],
+        [116.406605,39.921585,"地址：北京市东城区东华门大街"],
+        [116.412222,39.912345,"地址：北京市东城区正义路甲5号"]
+    ];
+    var opts = {
+        width : 250,     // 信息窗口宽度
+        height: 80,     // 信息窗口高度
+        title : "信息窗口" , // 信息窗口标题
+        enableMessage:true//设置允许信息窗发送短息
+    };
+    for(var i=0;i<data_info.length;i++){
+        var marker = new BMap.Marker(new BMap.Point(data_info[i][0],data_info[i][1]));  // 创建标注
+        var content = data_info[i][2];
+        map.addOverlay(marker);               // 将标注添加到地图中
+        addClickHandler(content,marker);
+    }
+    function addClickHandler(content,marker){
+        marker.addEventListener("click",function(e){
+            openInfo(content,e)}
+        );
+    }
+    function openInfo(content,e){
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow(content,opts);  // 创建信息窗口对象
+        map.openInfoWindow(infoWindow,point); //开启信息窗口
+    }
 </script>
-

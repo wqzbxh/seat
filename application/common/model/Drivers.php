@@ -246,6 +246,25 @@ Class Drivers extends Model{
         return $returnArray;
     }
 
+    public static function getAllList()
+    {
+        $returnArray = [];
+        $result = self::where(array('is_del'=> 0))->field('id,lat,lng')->select()->toArray();
+        if(!empty($result)){
+            $returnArray = [
+                'code' => 0,
+                'msg' => Error::ERRORCODE[0],
+                'data' => $result
+            ];
+        }else{
+            $returnArray = [
+                'code' => 10001,
+                'msg' => Error::ERRORCODE[10001],
+                'data' => []
+            ];
+        }
+        return $returnArray;
+    }
 }
 
 
